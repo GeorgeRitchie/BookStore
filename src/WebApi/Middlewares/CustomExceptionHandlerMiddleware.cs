@@ -1,4 +1,6 @@
-﻿using Domain.Shared.ExceptionAbstractions;
+﻿using Application.Common.Exceptions;
+using Domain.Shared.ExceptionAbstractions;
+using Newtonsoft.Json;
 using WebApi.Models.ResponseModels;
 
 namespace WebApi.Middlewares
@@ -15,6 +17,9 @@ namespace WebApi.Middlewares
 			// Register known exception types and handlers here.
 			exceptionHandlers = new Dictionary<Type, Action<HttpContext, Exception>>
 			{
+				{ typeof(FluentValidationException), HandleFluentValidationException },
+				{ typeof(UnauthenticatedUserException), HandleUnauthenticatedUserException },
+				{ typeof(AccessForbiddenException), HandleAccessForbiddenException },
 			};
 		}
 
@@ -73,7 +78,7 @@ namespace WebApi.Middlewares
 				Details = ""
 			});
 
-			Log.Warning("Internal exception with code '{@code}' caught. Exception thrown in '{@source}' with message '{@message}'\nDetails: {@details}\nException object: {@ex}",
+			Log.Information("Internal exception with code '{@code}' caught. Exception thrown in '{@source}' with message '{@message}'\nDetails: {@details}\nException object: {@ex}",
 							ex.StatusCode,
 							ex.Source,
 							ex.Message,
@@ -92,7 +97,7 @@ namespace WebApi.Middlewares
 				Details = ex.Description
 			});
 
-			Log.Warning("Public exception with code '{@code}' caught. Exception thrown in '{@source}' with message '{@message}'\nDetails: {@details}\nException object: {@ex}",
+			Log.Information("Public exception with code '{@code}' caught. Exception thrown in '{@source}' with message '{@message}'\nDetails: {@details}\nException object: {@ex}",
 							ex.StatusCode,
 							ex.Source,
 							ex.Message,
@@ -103,6 +108,66 @@ namespace WebApi.Middlewares
 		#endregion
 
 		#region Registered exceptions handlers
+
+		private void HandleFluentValidationException(HttpContext context, Exception ex)
+		{
+			FluentValidationException fvex = ex as FluentValidationException;
+			context.Response.ContentType = "application/json";
+			context.Response.StatusCode = StatusCodes.Status400BadRequest;
+			context.Response.WriteAsJsonAsync(new ExceptionDataAsResponse
+			{
+				StatusCode = fvex!.StatusCode.Value,
+				Message = fvex.Message,
+				Details = $"{{ \"Errors\": {JsonConvert.SerializeObject(fvex.Errors)} }}"
+			});
+
+			Log.Information("Fluent validation exception with code '{@code}' caught. Exception thrown in '{@source}' with message '{@message}'\nDetails: {@details}\nException object: {@ex}",
+				   fvex.StatusCode,
+				   fvex.Source,
+				   fvex.Message,
+				   $"{{ \"Errors\": {JsonConvert.SerializeObject(fvex.Errors)} }}",
+				   fvex);
+		}
+
+		private void HandleUnauthenticatedUserException(HttpContext context, Exception ex)
+		{
+			UnauthenticatedUserException uuaex = ex as UnauthenticatedUserException;
+			context.Response.ContentType = "application/json";
+			context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+			context.Response.WriteAsJsonAsync(new ExceptionDataAsResponse
+			{
+				StatusCode = uuaex!.StatusCode.Value,
+				Message = uuaex.Message,
+				Details = ""
+			});
+
+			Log.Information("Unauthenticated user exception with code '{@code}' caught. Exception thrown in '{@source}' with message '{@message}'\nDetails: {@details}\nException object: {@ex}",
+				   uuaex.StatusCode,
+				   uuaex.Source,
+				   uuaex.Message,
+				   uuaex.Description,
+				   uuaex);
+		}
+
+		private void HandleAccessForbiddenException(HttpContext context, Exception ex)
+		{
+			AccessForbiddenException faex = ex as AccessForbiddenException;
+			context.Response.ContentType = "application/json";
+			context.Response.StatusCode = StatusCodes.Status403Forbidden;
+			context.Response.WriteAsJsonAsync(new ExceptionDataAsResponse
+			{
+				StatusCode = faex!.StatusCode.Value,
+				Message = faex.Message,
+				Details = ""
+			});
+
+			Log.Information("Access forbidden exception with code '{@code}' caught. Exception thrown in '{@source}' with message '{@message}'\nDetails: {@details}\nException object: {@ex}",
+				   faex.StatusCode.Value,
+				   faex.Source,
+				   faex.Message,
+				   faex.Description,
+				   faex);
+		}
 
 		// add your custom exception handlers here, don't forget to add logging
 
