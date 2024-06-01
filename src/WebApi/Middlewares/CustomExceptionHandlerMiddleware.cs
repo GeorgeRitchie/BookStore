@@ -1,4 +1,4 @@
-﻿using Domain.Shared.Interfaces;
+﻿using Domain.Shared.ExceptionAbstractions;
 using WebApi.Models.ResponseModels;
 
 namespace WebApi.Middlewares
@@ -68,7 +68,7 @@ namespace WebApi.Middlewares
 			context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 			context.Response.WriteAsJsonAsync(new ExceptionDataAsResponse
 			{
-				StatusCode = ex.StatusCode,
+				StatusCode = ex.StatusCode.Value,
 				Message = ex.Message,
 				Details = ""
 			});
@@ -87,7 +87,7 @@ namespace WebApi.Middlewares
 			context.Response.StatusCode = StatusCodes.Status400BadRequest;
 			context.Response.WriteAsJsonAsync(new ExceptionDataAsResponse
 			{
-				StatusCode = ex.StatusCode,
+				StatusCode = ex.StatusCode.Value,
 				Message = ex.Message,
 				Details = ex.Description
 			});

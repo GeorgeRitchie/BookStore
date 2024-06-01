@@ -1,8 +1,8 @@
-﻿namespace Domain.Shared.Interfaces
+﻿namespace Domain.Shared.ExceptionAbstractions
 {
 	public interface IException
 	{
-		public string StatusCode { get; }
+		public ExceptionStatusCode StatusCode { get; }
 		public string Message { get; }
 		public string Description { get; }
 		public string Source { get; }
