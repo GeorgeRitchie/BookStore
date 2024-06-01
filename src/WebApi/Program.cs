@@ -1,5 +1,7 @@
 using Application;
 using Application.Common.Interfaces.Services;
+using Infrastructure.Common;
+using Infrastructure;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using WebApi.Common;
 using WebApi.Common.Extensions;
@@ -17,8 +19,16 @@ builder.Services.AddControllers();
 
 #region Configuring IOption patter classes
 
-builder.Services.AddOptions<ApplicationSettings>()
-	.BindConfiguration(ApplicationSettings.ConfigurationSection);
+builder.Services.AddOptions<WebApiSettings>()
+	.BindConfiguration(WebApiSettings.ConfigurationSection);
+
+builder.Services.AddOptions<InfrastructureSettings>()
+	.BindConfiguration(InfrastructureSettings.ConfigurationSection)
+	.PostConfigure<IWebHostEnvironment>((options, env) =>
+	{
+		options.Environment = env.EnvironmentName;
+		options.IsDevelopmentEnvironment = env.IsDevelopment();
+	});
 
 #endregion
 
@@ -27,6 +37,9 @@ builder.Services.AddHttpContextAccessor();
 
 // Adding all services from Application part
 builder.Services.AddApplication();
+
+// Adding all services from Infrastructure part
+builder.Services.AddInfrastructure();
 
 // Adding Swagger. Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

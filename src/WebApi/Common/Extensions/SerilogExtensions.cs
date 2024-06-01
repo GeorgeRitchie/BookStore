@@ -8,7 +8,7 @@ namespace WebApi.Common.Extensions
 	{
 		public static IServiceCollection AddSerilogStuff(this IServiceCollection services)
 		{
-			var appSettings = services.BuildServiceProvider().GetRequiredService<IOptions<ApplicationSettings>>().Value;
+			var appSettings = services.BuildServiceProvider().GetRequiredService<IOptions<WebApiSettings>>().Value;
 
 			Log.Logger = new LoggerConfiguration()
 				.MinimumLevel.Is(LogEventLevel.Warning)

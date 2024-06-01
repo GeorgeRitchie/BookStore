@@ -1,6 +1,6 @@
 ﻿namespace WebApi.Common
 {
-	public class ApplicationSettings
+	public class WebApiSettings
 	{
 		public const string ConfigurationSection = "WebApi";
 
