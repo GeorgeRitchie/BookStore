@@ -29,6 +29,26 @@ namespace Infrastructure.Persistence.Repositories
 			return _context.Database.BeginTransactionAsync(isolationLevel, cancellationToken);
 		}
 
+		public void CommitTransaction()
+		{
+			_context.Database.CommitTransaction();
+		}
+
+		public Task CommitTransactionAsync(CancellationToken cancellationToken = default)
+		{
+			return _context.Database.CommitTransactionAsync(cancellationToken);
+		}
+
+		public void RollbackTransaction()
+		{
+			_context.Database.RollbackTransaction();
+		}
+
+		public Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
+		{
+			return _context.Database.RollbackTransactionAsync(cancellationToken);
+		}
+
 		public virtual int SaveChanges()
 		{
 			return _context.SaveChanges();

@@ -6,6 +6,11 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using WebApi.Common;
 using WebApi.Common.Extensions;
 using WebApi.Services;
+using Asp.Versioning.ApiExplorer;
+using Microsoft.Extensions.Options;
+using AutoMapper;
+using Application.Common.Interfaces.Repositories;
+using Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,24 +72,76 @@ builder.Services.AddAPIVersioning();
 builder.Services.AddAuthenticationByJwtToken();
 
 #region Custom Service Registration here
+
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+
 #endregion
 
 var app = builder.Build();
 
+var webApiSettings = app.Services.GetRequiredService<IOptions<WebApiSettings>>().Value;
+
+DoActionsBeforeStartTheProgram(app);
+
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || webApiSettings.EnableSwaggerUI)
 {
+	var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
 	app.UseSwagger();
-	app.UseSwaggerUI();
+	app.UseSwaggerUI(opt =>
+	{
+		// build a swagger endpoint for each discovered API version
+		foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+		{
+			opt.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+		}
+		opt.InjectStylesheet("/swagger-ui/SwaggerDark.css");
+	});
 }
 
 app.UseCustomExceptionHandlerMiddleware();
 
-app.UseHttpsRedirection();
+if (app.Environment.IsProduction() || webApiSettings.EnableHttpsRedirection)
+{
+	app.UseHsts();
+	app.UseHttpsRedirection();
+}
 
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseCors("AllowAll");
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
 app.Run();
+
+static void DoActionsBeforeStartTheProgram(WebApplication app)
+{
+	using (var scope = app.Services.CreateScope())
+	{
+		var serviceProvider = scope.ServiceProvider;
+
+		try
+		{
+			var autoMapper = serviceProvider.GetRequiredService<IMapper>();
+
+			// Calling Db Initializer
+			var repository = serviceProvider.GetRequiredService<IAppDb>();
+			AppDbInitializer.Initialize(repository, autoMapper);
+
+			// any code to do before start program
+		}
+		catch (Exception ex)
+		{
+			Log.Fatal(ex, "An error occurred while app initialization.");
+
+			throw;
+		}
+	}
+}
