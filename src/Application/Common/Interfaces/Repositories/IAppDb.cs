@@ -2,5 +2,6 @@
 {
 	public interface IAppDb : IDataBase
 	{
+		IRepository<User> Users { get; }
 	}
 }

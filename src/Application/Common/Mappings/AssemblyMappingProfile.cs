@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Project.Application.Common.Mappings
+namespace Application.Common.Mappings
 {
 	/// <summary>
 	/// Represents an AutoMapper profile that automatically applies mappings from assemblies.

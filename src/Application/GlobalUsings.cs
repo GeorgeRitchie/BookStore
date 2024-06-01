@@ -4,6 +4,7 @@ global using Serilog;
 global using MediatR;
 global using Newtonsoft.Json;
 
-global using Domain.Shared;
+global using Domain.Entities;
 global using Application.Common.Attributes;
-global using Project.Application.Common.Mappings;
+global using Application.Common.Mappings;
+global using Application.Common.Interfaces.Repositories;
