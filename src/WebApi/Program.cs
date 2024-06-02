@@ -74,6 +74,7 @@ builder.Services.AddAuthenticationByJwtToken();
 #region Custom Service Registration here
 
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IFileManager, FileManager>();
 
 #endregion
 
