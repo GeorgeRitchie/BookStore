@@ -23,8 +23,7 @@
 
 		protected Result(bool isSuccess, IEnumerable<Error> errors)
 		{
-			if (errors is null)
-				throw new ArgumentNullException(nameof(errors));
+			ArgumentNullException.ThrowIfNull(errors, nameof(errors));
 
 			if (isSuccess == true && errors.Any() == true)
 				throw new ArgumentException($"Inappropriate values of '{nameof(isSuccess)}' and '{nameof(errors)}'");
@@ -46,11 +45,11 @@
 		public static Result<TValue> Failure<TValue>(TValue? value, Error error) => Result<TValue>.Failure(value, error);
 		public static Result<TValue> Failure<TValue>(TValue? value, IEnumerable<Error> errors) => Result<TValue>.Failure(value, errors);
 		public static Result<TValue> Combine<TValue>(params Result<TValue>[] results) => Result<TValue>.Combine(results);
+
 		public Result Ensure(Func<bool> predicate, Error error)
 		{
-			if (predicate == null) throw new ArgumentNullException(nameof(predicate));
-
-			if (error == null) throw new ArgumentNullException(nameof(error));
+			ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
+			ArgumentNullException.ThrowIfNull(error, nameof(error));
 
 			if (predicate.Invoke() == false)
 			{
@@ -80,17 +79,30 @@
 
 		public static implicit operator Result<TValue>(TValue? value) => value is null ? Failure(value) : Success(value);
 		public static implicit operator TValue?(Result<TValue> result) => result.Value;
-		
+
 		public static Result<TValue> Success(TValue? value) => new(value, true, Error.None);
 		public static Result<TValue> Failure(TValue? value) => new(value, false, Error.Default);
 		public static Result<TValue> Failure(TValue? value, Error error) => new(value, false, error);
 		public static Result<TValue> Failure(TValue? value, IEnumerable<Error> errors) => new(value, false, errors);
-		
+
+		public new Result<TValue> Ensure(Func<bool> predicate, Error error)
+		{
+			ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
+			ArgumentNullException.ThrowIfNull(error, nameof(error));
+
+			if (predicate.Invoke() == false)
+			{
+				_status = false;
+				_errors.Add(error);
+			}
+
+			return this;
+		}
+
 		public Result<TValue> Ensure(Func<TValue?, bool> predicate, Error error)
 		{
-			if (predicate == null) throw new ArgumentNullException(nameof(predicate));
-
-			if (error == null) throw new ArgumentNullException(nameof(error));
+			ArgumentNullException.ThrowIfNull(predicate, nameof(predicate));
+			ArgumentNullException.ThrowIfNull(error, nameof(error));
 
 			if (predicate.Invoke(_value) == false)
 			{
@@ -103,7 +115,7 @@
 
 		public Result<TValue> Ensure(params (Func<TValue?, bool> predicate, Error error)[] validators)
 		{
-			if (validators == null || validators.Any() == false)
+			if (validators == null || validators.Length == 0)
 				throw new ArgumentNullException(nameof(validators));
 
 			var results = new List<Result<TValue>>();
@@ -113,13 +125,12 @@
 				results.Add(Ensure(predicate, error));
 			}
 
-			return Combine(results.ToArray());
+			return Combine([.. results]);
 		}
 
 		public Result<TOut> Map<TOut>(Func<TValue?, TOut> mappingFunc)
 		{
-			if (mappingFunc is null)
-				throw new ArgumentNullException(nameof(mappingFunc));
+			ArgumentNullException.ThrowIfNull(mappingFunc, nameof(mappingFunc));
 
 			return IsSuccess ? new(mappingFunc.Invoke(this), true, Error.None) : new(mappingFunc.Invoke(this), false, _errors);
 		}
@@ -130,7 +141,7 @@
 
 		public static Result<TValue> Combine(params Result<TValue>[] results)
 		{
-			if (results == null || results.Any() == false)
+			if (results == null || results.Length == 0)
 				throw new ArgumentNullException(nameof(results));
 
 			if (results.Any(i => i.IsFailure))
