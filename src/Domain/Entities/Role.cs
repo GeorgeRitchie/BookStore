@@ -2,7 +2,7 @@
 {
 	public class Role
 	{
-		public static readonly string SuperAdmin = "SuperAdmin";
-		public static readonly string Client = "Client";
+		public const string SuperAdmin = "SuperAdmin";
+		public const string Client = "Client";
 	}
 }
