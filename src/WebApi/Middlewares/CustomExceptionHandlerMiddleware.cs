@@ -57,7 +57,7 @@ namespace WebApi.Middlewares
 		{
 			context.Response.ContentType = "application/json";
 			context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-			context.Response.WriteAsJsonAsync(new ExceptionDataAsResponse
+			context.Response.WriteAsJsonAsync(new FailureResponse
 			{
 				StatusCode = "500",
 				Message = "Internal server error. Connect to support team.",
@@ -71,7 +71,7 @@ namespace WebApi.Middlewares
 		{
 			context.Response.ContentType = "application/json";
 			context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-			context.Response.WriteAsJsonAsync(new ExceptionDataAsResponse
+			context.Response.WriteAsJsonAsync(new FailureResponse
 			{
 				StatusCode = ex.StatusCode.Value,
 				Message = ex.Message,
@@ -90,7 +90,7 @@ namespace WebApi.Middlewares
 		{
 			context.Response.ContentType = "application/json";
 			context.Response.StatusCode = StatusCodes.Status400BadRequest;
-			context.Response.WriteAsJsonAsync(new ExceptionDataAsResponse
+			context.Response.WriteAsJsonAsync(new FailureResponse
 			{
 				StatusCode = ex.StatusCode.Value,
 				Message = ex.Message,
@@ -114,7 +114,7 @@ namespace WebApi.Middlewares
 			FluentValidationException fvex = ex as FluentValidationException;
 			context.Response.ContentType = "application/json";
 			context.Response.StatusCode = StatusCodes.Status400BadRequest;
-			context.Response.WriteAsJsonAsync(new ExceptionDataAsResponse
+			context.Response.WriteAsJsonAsync(new FailureResponse
 			{
 				StatusCode = fvex!.StatusCode.Value,
 				Message = fvex.Message,
@@ -134,7 +134,7 @@ namespace WebApi.Middlewares
 			UnauthenticatedUserException uuaex = ex as UnauthenticatedUserException;
 			context.Response.ContentType = "application/json";
 			context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-			context.Response.WriteAsJsonAsync(new ExceptionDataAsResponse
+			context.Response.WriteAsJsonAsync(new FailureResponse
 			{
 				StatusCode = uuaex!.StatusCode.Value,
 				Message = uuaex.Message,
@@ -154,7 +154,7 @@ namespace WebApi.Middlewares
 			AccessForbiddenException faex = ex as AccessForbiddenException;
 			context.Response.ContentType = "application/json";
 			context.Response.StatusCode = StatusCodes.Status403Forbidden;
-			context.Response.WriteAsJsonAsync(new ExceptionDataAsResponse
+			context.Response.WriteAsJsonAsync(new FailureResponse
 			{
 				StatusCode = faex!.StatusCode.Value,
 				Message = faex.Message,
