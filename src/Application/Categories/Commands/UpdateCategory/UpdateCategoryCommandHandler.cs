@@ -36,8 +36,15 @@ namespace Application.Categories.Commands.UpdateCategory
 					fileManager.Delete(category.Icon, ImageType.CategoryIcon);
 				}
 
-				await db.SaveChangesAsync(cancellationToken);
-				await db.CommitTransactionAsync(cancellationToken);
+				if (result.IsSuccess)
+				{
+					await db.SaveChangesAsync(cancellationToken);
+					await db.CommitTransactionAsync(cancellationToken);
+				}
+				else
+				{
+					await db.RollbackTransactionAsync(cancellationToken);
+				}
 
 				return result;
 			}

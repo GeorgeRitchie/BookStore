@@ -59,6 +59,17 @@
 
 			return this;
 		}
+
+		public static Result Combine(params Result[] results)
+		{
+			if (results == null || results.Length == 0)
+				throw new ArgumentNullException(nameof(results));
+
+			if (results.Any(i => i.IsFailure))
+				return Failure(results.SelectMany(r => r.Errors).Distinct());
+
+			return Success();
+		}
 	}
 
 	public class Result<TValue> : Result
