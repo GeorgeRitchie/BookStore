@@ -6,3 +6,35 @@ services:
     build:
       context: .
       dockerfile: src/WebApi/Dockerfile
+    ports:
+      - '9000:80'
+      - '9015:443'
+    environment:
+      WebApi__LogFilesDirectory: "/app/Logs"
+      WebApi__EnableSwaggerUI: "false"
+      Infrastructure__DbConnectionString: "Server=mssql-server;Database=BookStore;User=sa;Password=ScoringDbPassAdmin1;"
+    volumes:
+      - ./logs:/app/Logs
+      - ./wwwroot:/app/wwwroot
+    networks:
+      - my_network
+    depends_on:
+      - mssql-server
+
+  mssql-server:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      ACCEPT_EULA: 'Y'
+      SA_PASSWORD: 'ScoringDbPassAdmin1'
+      MSSQL_PID: 'Express'
+    ports:
+      - '1433:1433'
+    volumes:
+      - ./mssql-data:/var/opt/mssql
+    networks:
+      - my_network
+    restart: always
+
+networks:
+  my_network:
+    driver: bridge

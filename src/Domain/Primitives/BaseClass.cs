@@ -2,6 +2,6 @@
 {
 	public abstract class BaseClass : IBaseClass
 	{
-		public Guid Id { get; set; }
+		public Guid Id { get; protected set; } = Guid.NewGuid();
 	}
 }
