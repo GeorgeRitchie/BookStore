@@ -50,7 +50,7 @@ namespace WebApi.Services
 			ArgumentNullException.ThrowIfNull(file);
 			ArgumentNullException.ThrowIfNull(imageType);
 
-			return Path.Combine(environment.WebRootPath, imageType.Value, file.FileName);
+			return Path.Combine(environment.WebRootPath, imageType.Value, $"{file.UniqueKey}-{file.FileName}");
 		}
 
 		public string GetRelativePath(IFile file, ImageType imageType)
@@ -58,7 +58,7 @@ namespace WebApi.Services
 			ArgumentNullException.ThrowIfNull(file);
 			ArgumentNullException.ThrowIfNull(imageType);
 
-			return Path.Combine(imageType.Value, file.FileName);
+			return Path.Combine(imageType.Value, $"{file.UniqueKey}-{file.FileName}");
 		}
 
 		public bool IsPhoto(IFile file)

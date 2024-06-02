@@ -10,6 +10,8 @@ namespace WebApi.Models
 
 		public long SizeInBytes => formFile.Length;
 
+		public Guid UniqueKey { get; private init; } = Guid.NewGuid();
+
 		public Stream OpenReadStream()
 		{
 			return formFile.OpenReadStream();
