@@ -37,6 +37,9 @@
 
 		public Result UpdateName(string name, IQueryable<Category>? categories = null)
 		{
+			if (Name == name)
+				return Result.Success();
+
 			var result = Result.Success()
 				.Ensure(() => categories?.Any(c => c.Name == name) != true, DomainErrors.Category.NotUniqueName(name));
 

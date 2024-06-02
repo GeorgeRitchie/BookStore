@@ -1,5 +1,6 @@
 ﻿using Application.Common.Enumerations;
 using Application.Common.Interfaces.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Categories.Commands.DeleteCategory
@@ -15,7 +16,7 @@ namespace Application.Categories.Commands.DeleteCategory
 			{
 				await db.BeginTransactionAsync(cancellationToken);
 
-				var category = db.Categories.GetAll().FirstOrDefault(i => i.Id == request.Id)!;
+				var category = await db.Categories.GetAll().FirstOrDefaultAsync(i => i.Id == request.Id, cancellationToken);
 				db.Categories.Delete(category);
 
 				await db.SaveChangesAsync(cancellationToken);
