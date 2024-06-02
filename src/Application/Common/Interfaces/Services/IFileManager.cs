@@ -12,6 +12,6 @@ namespace Application.Common.Interfaces.Services
 		Stream OpenReadOnlyStream(string fileAbsolutePath);
 		Stream OpenReadOnlyStream(string fileRelativePath, ImageType imageType);
 		Result Delete(string? fileAbsolutePath);
-		Result Delete(string fileRelativePath, ImageType imageType);
+		Result Delete(string? fileRelativePath, ImageType imageType);
 	}
 }
