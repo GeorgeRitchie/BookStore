@@ -49,6 +49,9 @@
 
 		public Result UpdateFirstName(string firstName)
 		{
+			if (FirstName == firstName)
+				return Result.Success();
+
 			var result = Result.Success()
 				.Ensure(() => string.IsNullOrWhiteSpace(firstName) == false, DomainErrors.Author.NullOrWhiteSpaceFirstName());
 
@@ -60,6 +63,9 @@
 
 		public Result UpdateLastName(string lastName)
 		{
+			if (LastName == lastName)
+				return Result.Success();
+
 			var result = Result.Success()
 				.Ensure(() => string.IsNullOrWhiteSpace(lastName) == false, DomainErrors.Author.NullOrWhiteSpaceLastName());
 

@@ -78,6 +78,9 @@
 
 		public Result UpdateTitle(string title)
 		{
+			if (Title == title)
+				return Result.Success();
+
 			var result = Result.Success()
 				.Ensure(() => string.IsNullOrWhiteSpace(title) == false, DomainErrors.Book.NullOrWhiteSpaceTitle());
 
@@ -89,7 +92,7 @@
 
 		public Result UpdateISBN(string? isbn, IQueryable<Book>? books)
 		{
-			if (isbn is null || isbn.Trim() == string.Empty)
+			if (ISBN == isbn || isbn is null || isbn.Trim() == string.Empty)
 			{
 				ISBN = isbn;
 				return Result.Success();
