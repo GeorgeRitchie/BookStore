@@ -1,6 +1,7 @@
 ﻿using Application.Books.Commands.CreateBook;
 using Application.Books.Commands.DeleteBook;
 using Application.Books.Commands.UpdateBook;
+using Application.Books.Commands.UpdateBookAuthors;
 using Application.Books.Commands.UpdateBookCategories;
 using Application.Books.Queries.GetBook;
 using Application.Books.Queries.GetBooks;
@@ -49,6 +50,14 @@ namespace WebApi.Controllers
 
 		[HttpPut]
 		public async Task<IActionResult> UpdateBookCategory([FromBody] UpdateBookCategoriesCommand command)
+		{
+			var result = await Mediator.Send(command);
+
+			return result.To200Or400Or500Response();
+		}
+
+		[HttpPut]
+		public async Task<IActionResult> UpdateBookAuthor([FromBody] UpdateBookAuthorsCommand command)
 		{
 			var result = await Mediator.Send(command);
 
